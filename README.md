@@ -1,14 +1,15 @@
-# gRPC Remote Procedure Call
+# Algoritmo de exclusão mútua de Peterson/gRPC
 
-Disciplina: Sistemas Distribuidos
+Disciplina: Sistemas Distribuídos
 
-Alunos: Nayse Fagundes e Gabriel Farias 
+O algoritmo de exclusão mútua de Peterson é uma solução clássica para garantir a exclusão mútua em um sistema distribuído ou paralelo, permitindo que processos ou threads compartilhem recursos sem conflitos.
 
-## Tema 7: Compra de ticket do Restaurante universitário
 
-o cliente informa matricula e valor a ser pago
+## Cliente/Servidor
 
-o servidor responde: código de barras e valor total
+- O servidor implementado permite que os clientes iniciem e encerrem pedidos de exclusão mútua para acessar um recurso compartilhado.
+
+- O cliente envia um pedido de exclusão mútua para acessar o recurso compartilhado e, em seguida, encerra o pedido.
 
 
 ## Instalação
@@ -19,27 +20,25 @@ Necessário possuir Python, e as bibliotecas concurrent.futures, grpcio e grpcio
 
 ```
 pip install grpcio grpcio-tools
-pip install uuid
+
 ```
 
 ## Execução
 
-Dentro do diretório com os arquivos, entre eles o _ticket.proto_ executar:
+Dentro do diretório com os arquivos, entre eles o _exclusao_mutua.proto_ executar:
 ```
-python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. ticket.proto
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. exclusao_mutua.proto
 ```
 
-Isso irá gerar os arquivos ticket_pb2 e ticket_pb2_grpc, dentro do diretório junto a todos os códigos.
+Isso irá gerar os arquivos exclusao_mutua_pb2 e exclusao_mutua_pb2_grpc, dentro do diretório junto a todos os códigos.
 
-Em prompts de comandos diferente executar o arquivo do servidor:
+Em prompts de comandos diferente executar o arquivo do servidor/cliente:
 
 ```
-python servidor_restaurante.py
+python servidor.py
 ```
 ```
-python execute.py
+python cliente.py
 ```
-Quando executado informar _número de matricula_ e _valor_ a ser pago pelos Tickets. O programa retornará o código de barras e o valor total.
-
 
 _Documentação gRPC em python:_ https://grpc.io/docs/languages/python/basics/
