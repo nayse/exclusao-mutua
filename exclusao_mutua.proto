@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package exclusao_mutua;
+
+service ServicoEleicao {
+  rpc IniciarPedido(PedidoRequest) returns (PedidoResponse) {}
+  rpc EncerrarPedido(PedidoRequest) returns (PedidoResponse) {}
+}
+
+message PedidoRequest {
+  int32 id_do_processo = 1;
+}
+
+message PedidoResponse {}
