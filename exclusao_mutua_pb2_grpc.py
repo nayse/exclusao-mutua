@@ -5,7 +5,7 @@ import grpc
 import exclusao_mutua_pb2 as exclusao__mutua__pb2
 
 
-class ServicoEleicaoStub(object):
+class ExclusaoMutuaStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -14,58 +14,74 @@ class ServicoEleicaoStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.IniciarPedido = channel.unary_unary(
-                '/exclusao_mutua.ServicoEleicao/IniciarPedido',
-                request_serializer=exclusao__mutua__pb2.PedidoRequest.SerializeToString,
-                response_deserializer=exclusao__mutua__pb2.PedidoResponse.FromString,
+        self.RegistrarCliente = channel.unary_unary(
+                '/exclusao_mutua.ExclusaoMutua/RegistrarCliente',
+                request_serializer=exclusao__mutua__pb2.RequisicaoRegistro.SerializeToString,
+                response_deserializer=exclusao__mutua__pb2.RespostaRegistro.FromString,
                 )
-        self.EncerrarPedido = channel.unary_unary(
-                '/exclusao_mutua.ServicoEleicao/EncerrarPedido',
-                request_serializer=exclusao__mutua__pb2.PedidoRequest.SerializeToString,
-                response_deserializer=exclusao__mutua__pb2.PedidoResponse.FromString,
+        self.SolicitarAcesso = channel.unary_unary(
+                '/exclusao_mutua.ExclusaoMutua/SolicitarAcesso',
+                request_serializer=exclusao__mutua__pb2.RequisicaoAcesso.SerializeToString,
+                response_deserializer=exclusao__mutua__pb2.RespostaAcesso.FromString,
+                )
+        self.LiberarAcesso = channel.unary_unary(
+                '/exclusao_mutua.ExclusaoMutua/LiberarAcesso',
+                request_serializer=exclusao__mutua__pb2.RequisicaoLiberacao.SerializeToString,
+                response_deserializer=exclusao__mutua__pb2.RespostaLiberacao.FromString,
                 )
 
 
-class ServicoEleicaoServicer(object):
+class ExclusaoMutuaServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def IniciarPedido(self, request, context):
+    def RegistrarCliente(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def EncerrarPedido(self, request, context):
+    def SolicitarAcesso(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def LiberarAcesso(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_ServicoEleicaoServicer_to_server(servicer, server):
+def add_ExclusaoMutuaServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'IniciarPedido': grpc.unary_unary_rpc_method_handler(
-                    servicer.IniciarPedido,
-                    request_deserializer=exclusao__mutua__pb2.PedidoRequest.FromString,
-                    response_serializer=exclusao__mutua__pb2.PedidoResponse.SerializeToString,
+            'RegistrarCliente': grpc.unary_unary_rpc_method_handler(
+                    servicer.RegistrarCliente,
+                    request_deserializer=exclusao__mutua__pb2.RequisicaoRegistro.FromString,
+                    response_serializer=exclusao__mutua__pb2.RespostaRegistro.SerializeToString,
             ),
-            'EncerrarPedido': grpc.unary_unary_rpc_method_handler(
-                    servicer.EncerrarPedido,
-                    request_deserializer=exclusao__mutua__pb2.PedidoRequest.FromString,
-                    response_serializer=exclusao__mutua__pb2.PedidoResponse.SerializeToString,
+            'SolicitarAcesso': grpc.unary_unary_rpc_method_handler(
+                    servicer.SolicitarAcesso,
+                    request_deserializer=exclusao__mutua__pb2.RequisicaoAcesso.FromString,
+                    response_serializer=exclusao__mutua__pb2.RespostaAcesso.SerializeToString,
+            ),
+            'LiberarAcesso': grpc.unary_unary_rpc_method_handler(
+                    servicer.LiberarAcesso,
+                    request_deserializer=exclusao__mutua__pb2.RequisicaoLiberacao.FromString,
+                    response_serializer=exclusao__mutua__pb2.RespostaLiberacao.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'exclusao_mutua.ServicoEleicao', rpc_method_handlers)
+            'exclusao_mutua.ExclusaoMutua', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class ServicoEleicao(object):
+class ExclusaoMutua(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def IniciarPedido(request,
+    def RegistrarCliente(request,
             target,
             options=(),
             channel_credentials=None,
@@ -75,14 +91,14 @@ class ServicoEleicao(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/exclusao_mutua.ServicoEleicao/IniciarPedido',
-            exclusao__mutua__pb2.PedidoRequest.SerializeToString,
-            exclusao__mutua__pb2.PedidoResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/exclusao_mutua.ExclusaoMutua/RegistrarCliente',
+            exclusao__mutua__pb2.RequisicaoRegistro.SerializeToString,
+            exclusao__mutua__pb2.RespostaRegistro.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def EncerrarPedido(request,
+    def SolicitarAcesso(request,
             target,
             options=(),
             channel_credentials=None,
@@ -92,8 +108,25 @@ class ServicoEleicao(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/exclusao_mutua.ServicoEleicao/EncerrarPedido',
-            exclusao__mutua__pb2.PedidoRequest.SerializeToString,
-            exclusao__mutua__pb2.PedidoResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/exclusao_mutua.ExclusaoMutua/SolicitarAcesso',
+            exclusao__mutua__pb2.RequisicaoAcesso.SerializeToString,
+            exclusao__mutua__pb2.RespostaAcesso.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def LiberarAcesso(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/exclusao_mutua.ExclusaoMutua/LiberarAcesso',
+            exclusao__mutua__pb2.RequisicaoLiberacao.SerializeToString,
+            exclusao__mutua__pb2.RespostaLiberacao.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
