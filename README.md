@@ -1,4 +1,4 @@
-# Algoritmo de exclusão mútua de Peterson/gRPC
+# Algoritmo de exclusão mútua
 
 Disciplina: Sistemas Distribuídos
 
