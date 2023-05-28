@@ -1,46 +1,76 @@
 import grpc
-import concurrent.futures as futures
-import exclusao_mutua_pb2
-import exclusao_mutua_pb2_grpc
+from concurrent import futures
+import threading
 import time
 
-class ServicoEleicao(exclusao_mutua_pb2_grpc.ServicoEleicaoServicer):
+import exclusao_mutua_pb2
+import exclusao_mutua_pb2_grpc
+
+tempo_espera = 60 * 60 * 24
+
+class ExclusaoMutuaServicer(exclusao_mutua_pb2_grpc.ExclusaoMutuaServicer):
     def __init__(self):
-        self.process_id = None
-        self.recurso_compartilhado = 0  # recurso que vai ser compartilhado
-        self.flag = [False, False]  # flag pra entrar na seção
+        self.clientes = []
+        self.mutex = threading.Lock()
+        self.token = False
+        self.cliente_atual = None
+        self.thread_repasse_token = threading.Thread(target=self.repasse_token)
+        self.thread_repasse_token.start()
 
-    def IniciarPedido(self, request, context):
-        self.process_id = request.id_do_processo
-        print("O processo {} acabou de iniciar o pedido de exclusão mútua.".format(self.process_id))
-        # entrando na seção
-        self.flag[self.process_id] = True
-        self.turn = 1 - self.process_id
-        while self.flag[1 - self.process_id] and self.turn == 1 - self.process_id:
-            pass
-        #sessão critica
-        self.recurso_compartilhado += 1
-        print("O processo {} acessou o recurso compartilhado".format(self.process_id))
-        print("O recurso compartilhado foi acessado {} vezes.".format(self.recurso_compartilhado))
-        time.sleep(1)  
-        #saindo 
-        self.flag[self.process_id] = False
+    def RegistrarCliente(self, request, context):
+        cliente_id = request.cliente_id
+        print(f"Cliente {cliente_id} conectado.")
+        self.clientes.append(cliente_id)
+        return exclusao_mutua_pb2.RespostaRegistro()
 
-        return exclusao_mutua_pb2.PedidoResponse()
+    def SolicitarAcesso(self, request, context):
+        cliente_id = request.cliente_id
+        print(f"Cliente {cliente_id} solicitou acesso.")
 
-    def EncerrarPedido(self, request, context):
-        self.process_id = None
-        print("O processo {} encerrou o pedido de exclusão mútua.".format(request.id_do_processo))
-        return exclusao_mutua_pb2.PedidoResponse()
+        with self.mutex:
+            if not self.token:
+                self.token = True
+                self.cliente_atual = cliente_id
+                print(f"Cliente {cliente_id} obteve acesso à seção crítica.")
+                return exclusao_mutua_pb2.RespostaAcesso(permitido=True)
+            else:
+                print(f"Acesso negado para o cliente {cliente_id}. Aguardando para obter acesso à seção crítica.")
+                return exclusao_mutua_pb2.RespostaAcesso(permitido=False)
 
+    def LiberarAcesso(self, request, context):
+        cliente_id = request.cliente_id
+        print(f"Cliente {cliente_id} liberou acesso.")
 
-def rodar_servidor():
-    server = grpc.server(futures.ThreadPoolExecutor())
-    exclusao_mutua_pb2_grpc.add_ServicoEleicaoServicer_to_server(ServicoEleicao(), server)
-    server.add_insecure_port('[::]:50051')
+        with self.mutex:
+            if cliente_id == self.cliente_atual:
+                self.token = False
+                self.cliente_atual = None
+                print(f"Cliente {cliente_id} liberou o acesso à seção crítica.")
+
+        return exclusao_mutua_pb2.RespostaLiberacao()
+
+    def repasse_token(self):
+        while True:
+            if not self.token and self.clientes:
+                self.cliente_atual = self.clientes[0]
+                self.token = True
+                print(f"Cliente {self.cliente_atual} obteve acesso à seção crítica.")
+                self.clientes = self.clientes[1:] + [self.clientes[0]]
+            time.sleep(1)  # Intervalo de repasse do token
+
+def serve():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    exclusao_mutua_pb2_grpc.add_ExclusaoMutuaServicer_to_server(
+        ExclusaoMutuaServicer(), server
+    )
+    server.add_insecure_port("[::]:90000")
     server.start()
     print("Servidor em execução...")
-    server.wait_for_termination()
+    try:
+        while True:
+            time.sleep(tempo_espera)
+    except KeyboardInterrupt:
+        server.stop(0)
 
-if __name__ == '__main__':
-    rodar_servidor()
+if __name__ == "__main__":
+    serve()
