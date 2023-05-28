@@ -2,13 +2,28 @@ syntax = "proto3";
 
 package exclusao_mutua;
 
-service ServicoEleicao {
-  rpc IniciarPedido(PedidoRequest) returns (PedidoResponse) {}
-  rpc EncerrarPedido(PedidoRequest) returns (PedidoResponse) {}
+message RequisicaoRegistro {
+    int32 cliente_id = 1;
 }
 
-message PedidoRequest {
-  int32 id_do_processo = 1;
+message RespostaRegistro {}
+
+message RequisicaoAcesso {
+    int32 cliente_id = 1;
 }
 
-message PedidoResponse {}
+message RespostaAcesso {
+    bool permitido = 1;
+}
+
+message RequisicaoLiberacao {
+    int32 cliente_id = 1;
+}
+
+message RespostaLiberacao {}
+
+service ExclusaoMutua {
+    rpc RegistrarCliente (RequisicaoRegistro) returns (RespostaRegistro) {}
+    rpc SolicitarAcesso (RequisicaoAcesso) returns (RespostaAcesso) {}
+    rpc LiberarAcesso (RequisicaoLiberacao) returns (RespostaLiberacao) {}
+}
